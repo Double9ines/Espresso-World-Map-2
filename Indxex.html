@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espresso World Map</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2A1A1F;
+            --secondary: #E0C8A9;
+            --accent: #B89F7E;
+            --dark: #0A0A0A;
+            --light: #F5F1E8;
+            --gray: #6B7280;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-border: rgba(184, 159, 126, 0.3);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+            color: white;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        
+        nav a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: var(--secondary);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 100px 20px;
+            margin-bottom: 50px;
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 20px;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            color: var(--light);
+        }
+        
+        .search-bar {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            background: white;
+            border-radius: 50px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .search-bar input {
+            flex: 1;
+            border: none;
+            padding: 15px 25px;
+            font-size: 16px;
+            outline: none;
+        }
+        
+        .search-bar button {
+            background: var(--secondary);
+            color: var(--primary);
+            border: none;
+            padding: 15px 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .search-bar button:hover {
+            background: #d4b992;
+        }
+        
+        /* Filter Section */
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* Locations Grid */
+        .locations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .location-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .location-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-img {
+            height: 200px;
+            overflow: hidden;
+        }
+        
+        .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        
+        .location-card:hover .card-img img {
+            transform: scale(1.05);
+        }
+        
+        .card-content {
+            padding: 20px;
+        }
+        
+        .card-content h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .location-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        .location-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .card-content p {
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        
+        .event-type {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .event-type.upcoming {
+            background: rgba(126, 176, 105, 0.15);
+            color: #7fb069;
+        }
+        
+        .event-type.past {
+            background: rgba(136, 68, 0, 0.15);
+            color: #884400;
+        }
+        
+        .view-btn {
+            color: var(--secondary);
+            background: var(--primary);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .view-btn:hover {
+            background: #3a2a2f;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--primary);
+            color: var(--light);
+            padding: 50px 0 20px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column h3 {
+            color: var(--secondary);
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-column a {
+            color: var(--light);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-column a:hover {
+            color: var(--secondary);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(224, 200, 169, 0.1);
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+        
+        .social-links a:hover {
+            background: rgba(224, 200, 169, 0.2);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(224, 200, 169, 0.2);
+            color: var(--accent);
+            font-size: 14px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            nav ul {
+                gap: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .hero p {
+                font-size: 18px;
+            }
+            
+            .locations-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <i class="fas fa-mug-hot"></i>
+                <span>Espresso World Map</span>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Events</a></li>
+                    <li><a href="#">Locations</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Discover Espresso Events Worldwide</h1>
+            <p>Explore past and upcoming events from around the globe, all in one place.</p>
+            <div class="search-bar">
+                <input type="text" placeholder="Search for locations or events...">
+                <button><i class="fas fa-search"></i> Search</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Filters -->
+        <div class="filters">
+            <button class="filter-btn active"><i class="fas fa-globe-americas"></i> All Events</button>
+            <button class="filter-btn"><i class="fas fa-calendar-plus"></i> Upcoming</button>
+            <button class="filter-btn"><i class="fas fa-history"></i> Past Events</button>
+            <button class="filter-btn"><i class="fas fa-map-marker-alt"></i> By Region</button>
+        </div>
+
+        <!-- Locations Grid -->
+        <div class="locations-grid">
+            <!-- Seoul -->
+            <div class="location-card">
+                <div class="card-img">
+                    <img src="https://images.unsplash.com/photo-1534274867514-d5b47ef89ed7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Seoul">
+                </div>
+                <div class="card-content">
+                    <h3>Seoul, South Korea</h3>
+                    <div class="location-meta">
+                        <span><i class="fas fa-calendar"></i> October 2023</span>
+                        <span><i class="fas fa-users"></i> 120+ Attendees</span>
+                    </div>
+                    <p>Join us for an exciting event in the heart of Seoul, where we'll explore the latest trends in technology and innovation.</p>
+                    <div class="card-footer">
+                        <span class="event-type upcoming">Upcoming</span>
+                        <button class="view-btn">View Details</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buenos Aires -->
+            <div class="location-card">
+                <div class="card-img">
+                    <img src="https://images.unsplash.com/photo-1612296727716-d6c13fa9ab5f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Buenos Aires">
+                </div>
+                <div class="card-content">
+                    <h3>Buenos Aires, Argentina</h3>
+                    <div class="location-meta">
+                        <span><i class="fas fa-calendar"></i> November 2023</span>
+                        <span><i class="fas fa-users"></i> 90+ Attendees</span>
+                    </div>
+                    <p>Experience the vibrant culture of Buenos Aires while networking with industry leaders and innovators.</p>
+                    <div class="card-footer">
+                        <span class="event-type upcoming">Upcoming</span>
+                        <button class="view-btn">View Details</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Denver -->
+            <div class="location-card">
+                <div class="card-img">
+                    <img src="https://images.unsplash.com/photo-1626968361226-2eafd4fbd6c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Denver">
+                </div>
+                <div class="card-content">
+                    <h3>Denver, USA</h3>
+                    <div class="location-meta">
+                        <span><i class="fas fa-calendar"></i> June 2022</span>
+                        <span><i class="fas fa-users"></i> 150+ Attendees</span>
+                    </div>
+                    <p>Our mountain-high event in Denver brought together thought leaders from across the industry.</p>
+                    <div class="card-footer">
+                        <span class="event-type past">Past Event</span>
+                        <button class="view-btn">View Details</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Berlin -->
+            <div class="location-card">
+                <div class="card-img">
+                    <img src="https://images.unsplash.com/photo-1560969184-10fe8719e047?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Berlin">
+                </div>
+                <div class="card-content">
+                    <h3>Berlin, Germany</h3>
+                    <div class="location-meta">
+                        <span><i class="fas fa-calendar"></i> May 2022</span>
+                        <span><i class="fas fa-users"></i> 200+ Attendees</span>
+                    </div>
+                    <p>An unforgettable event in Europe's startup capital, focusing on innovation and collaboration.</p>
+                    <div class="card-footer">
+                        <span class="event-type past">Past Event</span>
+                        <button class="view-btn">View Details</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- San Francisco -->
+            <div class="location-card">
+                <div class="card-img">
+                    <img src="https://images.unsplash.com/photo-1501594907352-04cda38ebc29?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="San Francisco">
+                </div>
+                <div class="card-content">
+                    <h3>San Francisco, USA</h3>
+                    <div class="location-meta">
+                        <span><i class="fas fa-calendar"></i> April 2022</span>
+                        <span><i class="fas fa-users"></i> 180+ Attendees</span>
+                    </div>
+                    <p>Our tech-focused event in the heart of Silicon Valley explored the future of digital innovation.</p>
+                    <div class="card-footer">
+                        <span class="event-type past">Past Event</span>
+                        <button class="view-btn">View Details</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- New York -->
+            <div class="location-card">
+                <div class="card-img">
+                    <img src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="New York">
+                </div>
+                <div class="card-content">
+                    <h3>New York, USA</h3>
+                    <div class="location-meta">
+                        <span><i class="fas fa-calendar"></i> March 2022</span>
+                        <span><i class="fas fa-users"></i> 220+ Attendees</span>
+                    </div>
+                    <p>The New York event brought together finance and technology leaders for groundbreaking discussions.</p>
+                    <div class="card-footer">
+                        <span class="event-type past">Past Event</span>
+                        <button class="view-btn">View Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Espresso World Map</h3>
+                    <p>Discover events and locations around the world where Espresso brings people together.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Events</a></li>
+                        <li><a href="#">Locations</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Info</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Coffee Street, Brew City</li>
+                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> info@espressoworldmap.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 Espresso World Map. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple filter functionality
+        document.querySelectorAll('.filter-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Here you would typically filter the cards
+                // For this example, we'll just show a message
+                const filterType = this.textContent.trim();
+                alert(`Filtering by: ${filterType}`);
+            });
+        });
+        
+        // View Details button functionality
+        document.querySelectorAll('.view-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const locationName = this.closest('.location-card').querySelector('h3').textContent;
+                alert(`Showing details for: ${locationName}`);
+            });
+        });
+    </script>
+</body>
+</html>
